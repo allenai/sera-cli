@@ -1361,7 +1361,7 @@ To use private HuggingFace models with Modal:
     )
     parser.add_argument(
         "--hf-secret",
-        default="hf-token-orca-rc",
+        default=None,
         help=(
             "Modal secret name containing HF_TOKEN for private/gated models. "
             "Create with: modal secret create <name> HF_TOKEN=<your-token>"
@@ -1369,6 +1369,12 @@ To use private HuggingFace models with Modal:
     )
 
     args = parser.parse_args()
+
+    # Environment variable fallbacks (CLI args > env vars > defaults)
+    if args.model is None:
+        args.model = os.environ.get("SERA_MODEL")
+    if args.hf_secret is None:
+        args.hf_secret = os.environ.get("SERA_HF_SECRET")
 
     # Validate: --endpoint is required unless --modal is used
     if not args.modal and not args.endpoint:

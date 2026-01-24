@@ -67,7 +67,7 @@ Anthropic      Convert to OpenAI     SWE-agent tools
   format       format + map tools    (str_replace_editor, bash)
 ```
 
-**Tool mapping in `src/sera/_main.py`:**
+**Tool mapping in `src/sera/main.py`:**
 - `str_replace_editor view` → `Read`
 - `str_replace_editor create` → `Write`
 - `str_replace_editor str_replace` → `Edit`
@@ -88,4 +88,14 @@ The system prompt is kept minimal ("You are a helpful assistant...") since vLLM 
 
 ## Configuration
 
-CLI args override defaults in `CONFIG`. Run `sera --help` for options.
+Configuration priority (highest to lowest):
+1. CLI arguments
+2. Environment variables
+3. Defaults in `CONFIG`
+
+**Environment variables:**
+- `SERA_MODEL` - Model name/path (fallback for `--model`)
+- `SERA_HF_SECRET` - Modal secret name for HuggingFace token (fallback for `--hf-secret`)
+- `SERA_API_KEY` - API key for direct endpoint authentication
+
+Run `sera --help` for CLI options.
