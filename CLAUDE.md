@@ -28,8 +28,8 @@ The proxy runs on port 8080, vLLM on port 8000.
 ```
 src/sera/
 ├── __init__.py   # Package entry point, exports main()
-├── main.py       # Proxy server and CLI
-└── deploy.py     # Standalone Modal deployment tool
+├── main.py       # Proxy server and CLI. Implements the `sera` command
+└── deploy.py     # Standalone Modal deployment tool. Implements the `deploy-sera` command
 ```
 
 CLI entry points:

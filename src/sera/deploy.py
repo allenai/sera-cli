@@ -33,7 +33,7 @@ import modal
 
 # ============ Modal Configuration ============
 
-MODAL_APP_NAME = "sera-demo-vllm"
+MODAL_APP_NAME = "sera-deploy-vllm"
 MODAL_VLLM_PORT = 8000
 MODAL_MAX_MODEL_LEN = 32768
 MODAL_GPU = "H100"
