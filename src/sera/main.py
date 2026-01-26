@@ -128,7 +128,7 @@ def generate_error_sse_events(
     so Claude Code doesn't crash trying to access undefined usage.input_tokens.
     """
     msg_id = f"msg_error_{hash(error_message) & 0xFFFFFFFF:08x}"
-    error_text = f"[Proxy Error] {error_message}"
+    error_text = f"[sera-cli] {error_message}"
     output_tokens = len(error_text) // 4
 
     return [
@@ -1036,15 +1036,19 @@ def create_app():
                             if overflow:
                                 input_tokens, max_context = overflow
 
-                                # If input alone exceeds context, we can't retry
-                                if input_tokens >= max_context:
+                                # Calculate available tokens for output
+                                available_tokens = max_context - input_tokens
+
+                                # If fewer than 1024 tokens available, not enough for useful output
+                                if available_tokens < 1024:
                                     log.error(
-                                        f"Context exhausted: {input_tokens} input tokens "
-                                        f">= {max_context} max context"
+                                        f"Context exhausted: {input_tokens} input tokens, "
+                                        f"only {available_tokens} tokens remaining"
                                     )
                                     for event in generate_error_sse_events(
-                                        f"Context exhausted: {input_tokens} input tokens exceed "
-                                        f"model's {max_context} token limit. Please start a new conversation.",
+                                        f"Context exhausted: {input_tokens} input tokens, "
+                                        f"only {available_tokens} tokens remaining. "
+                                        f"Use `/compact` to continue the conversation or `/clear` to start a new conversation.",
                                         CONFIG.model,
                                         input_tokens,
                                     ):
@@ -1052,9 +1056,7 @@ def create_app():
                                     return
 
                                 # Calculate max_tokens that fits, with 100 token buffer
-                                new_max_tokens = max(
-                                    256, max_context - input_tokens - 100
-                                )
+                                new_max_tokens = available_tokens - 100
                                 log.info(
                                     f"Context overflow: {input_tokens} input tokens, "
                                     f"retrying with max_tokens={new_max_tokens}"
@@ -1070,9 +1072,22 @@ def create_app():
                                     if retry_response.status_code != 200:
                                         retry_error = await retry_response.aread()
                                         log.error(f"vLLM retry error: {retry_error}")
-                                        # Return error with usage data
+                                        # Check if retry also failed due to context overflow
+                                        retry_overflow = parse_context_overflow_error(
+                                            retry_error.decode()
+                                        )
+                                        if retry_overflow:
+                                            retry_input, retry_max = retry_overflow
+                                            retry_available = retry_max - retry_input
+                                            error_msg = (
+                                                f"Context exhausted: {retry_input} input tokens, "
+                                                f"only {retry_available} tokens remaining. "
+                                                f"Use `/compact` to continue the conversation or `/clear` to start a new conversation."
+                                            )
+                                        else:
+                                            error_msg = f"vLLM error: {retry_error.decode()}"
                                         for event in generate_error_sse_events(
-                                            retry_error.decode(),
+                                            error_msg,
                                             CONFIG.model,
                                             input_tokens,
                                         ):
