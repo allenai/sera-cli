@@ -389,11 +389,18 @@ def convert_line_format(cc_result: str) -> str:
     return re.sub(r"^(\s*\d+)\u2192", r"\1\t", cc_result, flags=re.MULTILINE)
 
 
-def format_tool_result(tool_call_id: str, cc_result: str) -> str:
+def format_tool_result(
+    tool_call_id: str, cc_result: str, is_error: bool = False
+) -> str:
     """Format Claude Code tool result to match SWE-agent's expected output.
 
     Uses a cache to ensure historical messages get the same formatting as when
     they were first processed. This avoids issues with file state changes.
+
+    Args:
+        tool_call_id: Unique ID for this tool call
+        cc_result: The content returned by Claude Code
+        is_error: True if Claude Code marked this as an error (e.g., user rejection)
     """
     # Strip Claude Code system reminders first - they're not part of SWE-agent format
     cc_result = strip_system_reminders(cc_result)
@@ -430,6 +437,16 @@ def format_tool_result(tool_call_id: str, cc_result: str) -> str:
         f"format_result: has_context=True for tool_id={tool_call_id[:16]}... (current, processing fresh)"
     )
 
+    # Handle user rejections and explicit errors early (before tool-specific formatting)
+    # When is_error=True, Claude Code is signaling a rejection or error condition
+    if is_error:
+        log.debug("format_result: is_error=True, user rejection or error")
+        # Pass through the rejection message - it contains user feedback
+        # Prefix with clear indication that the operation was NOT performed
+        formatted = f"ERROR: The operation was NOT performed. {cc_result}"
+        tool_result_cache[tool_call_id] = formatted
+        return formatted
+
     swe_name = ctx["swe_name"]
     swe_input = ctx["swe_input"]
     formatted = cc_result  # Default to original
@@ -459,9 +476,13 @@ def format_tool_result(tool_call_id: str, cc_result: str) -> str:
 
         elif cmd == "str_replace":
             old_str = swe_input.get("old_str", "")
+            new_str = swe_input.get("new_str", "")
 
             # Check if Claude Code returned an error - detect common error patterns
-            # Claude Code Edit tool returns errors like "old_string was not found" or "not unique"
+            # Claude Code Edit tool returns errors like:
+            # - "No changes to make: old_string and new_string are exactly the same"
+            # - "String to replace not found in file"
+            # - "old_string is not unique" / "multiple occurrences"
             cc_result_lower = cc_result.lower()
             is_error = (
                 "error" in cc_result_lower
@@ -469,6 +490,7 @@ def format_tool_result(tool_call_id: str, cc_result: str) -> str:
                 or "not unique" in cc_result_lower
                 or "no match" in cc_result_lower
                 or "multiple" in cc_result_lower
+                or "no changes" in cc_result_lower
             )
 
             if is_error:
@@ -477,9 +499,20 @@ def format_tool_result(tool_call_id: str, cc_result: str) -> str:
                     f"format_result: str_replace error detected: {cc_result[:100]}"
                 )
                 if "not unique" in cc_result_lower or "multiple" in cc_result_lower:
+                    # Multiple occurrences - can't determine which to replace
                     formatted = (
                         f"No replacement was performed. Multiple occurrences of old_str "
                         f"`{old_str[:100]}` in the file. Please ensure it is unique."
+                    )
+                elif (
+                    "same" in cc_result_lower
+                    or "no changes" in cc_result_lower
+                    or "identical" in cc_result_lower
+                ):
+                    # old_str and new_str are the same - no-op edit
+                    formatted = (
+                        f"No replacement was performed, old_str `{old_str[:100]}` "
+                        f"is the same as new_str `{new_str[:100]}`."
                     )
                 else:
                     # Default to "not found" error format
@@ -491,7 +524,6 @@ def format_tool_result(tool_call_id: str, cc_result: str) -> str:
                 # Success case - read the file and generate a snippet like SWE-agent does
                 # Since proxy runs in same CWD as Claude Code, we can read the file directly
                 try:
-                    new_str = swe_input.get("new_str", "")
                     with open(local_path, "r", encoding="utf-8", errors="replace") as f:
                         file_content = f.read()
 
@@ -638,6 +670,7 @@ def convert_message(msg: dict) -> dict | list[dict]:
                         tr["content"]
                         if isinstance(tr["content"], str)
                         else json.dumps(tr["content"]),
+                        is_error=tr.get("is_error", False),
                     ),
                 }
                 for tr in tool_results
@@ -1085,7 +1118,9 @@ def create_app():
                                                 f"Use `/compact` to continue the conversation or `/clear` to start a new conversation."
                                             )
                                         else:
-                                            error_msg = f"vLLM error: {retry_error.decode()}"
+                                            error_msg = (
+                                                f"vLLM error: {retry_error.decode()}"
+                                            )
                                         for event in generate_error_sse_events(
                                             error_msg,
                                             CONFIG.model,
