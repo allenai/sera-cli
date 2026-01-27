@@ -4,6 +4,8 @@ This repo allows Claude Code to be used with the Ai2 Open Coding Agents SERA mod
 
 You will need [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) and [uv](https://docs.astral.sh/uv/getting-started/installation/) installed to set up the SERA CLI.
 
+For more information, see the [Open Coding Agents Blog Post](https://allenai.org/blog/open-coding-agents), [SERA Training Code](https://github.com/allenai/SERA), [SERA Paper](https://allenai.org/papers/opencodingagents), and [Ai2 Open Coding Agents Hugging Face Collection](https://huggingface.co/collections/allenai/open-coding-agents).
+
 ## Quick Start with Modal
 
 The fastest way to try SERA is with Modal, which handles GPU provisioning, vLLM deployment, and downloading the model automatically. This takes ~10m for the first run as ~65GB of model weights are downloaded. Subsequent runs will cache the model and start up faster.
@@ -138,3 +140,14 @@ The proxy supports API key authentication for vLLM endpoints:
 - **Self-hosted vLLM**: Start vLLM with `--api-key YOUR_KEY`, then set `SERA_API_KEY=YOUR_KEY`
 
 The proxy includes the API key in the `Authorization: Bearer <api_key>` header when making requests.
+
+## Citation
+```
+@article{sera2026,
+  title={SERA: Soft-Verified Efficient Repository Agents},
+  author={Shen, Ethan and Tormoen, Daniel and Shah, Saurabh and Farhadi, Ali and Dettmers, Tim},
+  year={2026},
+  institution={Allen Institute for AI},
+  url={https://allenai.org/papers/opencodingagents}
+}
+```
