@@ -6,6 +6,7 @@ build-backend = "uv_build"
 name = "ai2-sera-cli"
 version = "0.0.3"
 description = "Translation proxy enabling Claude Code CLI to work with SWE-agent format models"
+readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 classifiers = [

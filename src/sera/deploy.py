@@ -1,18 +1,20 @@
 """
-Deploy a vLLM model to Modal for use with the sera proxy.
+Deploy a persistent vLLM model to Modal for multi-user setups.
 
 This script deploys a model to Modal and keeps it running so multiple users
-can call it via `sera --endpoint <URL>`.
+can call it via `sera --endpoint <URL>`. Unlike `sera --modal` which creates
+ephemeral deployments that stop when you exit, `deploy-sera` creates persistent
+deployments that stay up until explicitly stopped.
 
 Usage:
-    deploy_model --model Qwen/Qwen3-32B                    # Deploy with 1 GPU
-    deploy_model --model Qwen/Qwen3-32B --num-gpus 2       # Deploy with 2 GPUs (tensor parallel)
-    deploy_model --model org/private-model --hf-secret huggingface  # Private model
-    deploy_model --stop                                    # Stop the running deployment
+    deploy-sera --model Qwen/Qwen3-32B                    # Deploy with 1 GPU
+    deploy-sera --model Qwen/Qwen3-32B --num-gpus 2       # Deploy with 2 GPUs (tensor parallel)
+    deploy-sera --model org/private-model --hf-secret huggingface  # Private model
+    deploy-sera --stop                                    # Stop the running deployment
 
 Examples:
-    # Deploy a model
-    ./deploy_model.py --model Qwen/Qwen3-32B --api-key mykey123
+    # Deploy a model with API key authentication
+    deploy-sera --model Qwen/Qwen3-32B --api-key mykey123
 
     # Use from another machine
     SERA_API_KEY=mykey123 sera --endpoint https://xxx.modal.run/v1/chat/completions
@@ -330,19 +332,19 @@ def main():
         epilog="""
 Examples:
     # Deploy with default model (1 GPU)
-    deploy_model --model Qwen/Qwen3-32B
+    deploy-sera --model Qwen/Qwen3-32B
 
     # Deploy with 2 GPUs for larger models
-    deploy_model --model Qwen/Qwen3-32B --num-gpus 2
+    deploy-sera --model Qwen/Qwen3-32B --num-gpus 2
 
     # Deploy with API key authentication
-    deploy_model --model Qwen/Qwen3-32B --api-key mysecretkey
+    deploy-sera --model Qwen/Qwen3-32B --api-key mysecretkey
 
     # Deploy a private HuggingFace model
-    deploy_model --model your-org/private-model --hf-secret huggingface
+    deploy-sera --model your-org/private-model --hf-secret huggingface
 
     # Stop the running deployment
-    deploy_model --stop
+    deploy-sera --stop
 
 To create a HuggingFace secret for private models:
     modal secret create huggingface HF_TOKEN=hf_xxxxx
