@@ -18,7 +18,7 @@ sera --modal
 sera --endpoint URL
 
 # Deploy a persistent vLLM instance (for multi-user setups)
-deploy-sera --model Qwen/Qwen3-32B
+deploy-sera --model allenai/SERA-32B
 ```
 
 The proxy runs on port 8080, vLLM on port 8000.

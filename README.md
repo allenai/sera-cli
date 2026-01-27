@@ -43,7 +43,7 @@ For teams or multi-user setups, you can create a persistent vLLM deployment on M
 
 ```bash
 # Deploy a persistent vLLM instance
-deploy-sera --model Qwen/Qwen3-32B
+deploy-sera --model allenai/SERA-32B
 
 # The command outputs an endpoint URL and API key
 # Share these with your team members
@@ -59,7 +59,7 @@ deploy-sera --stop
 
 | Option             | Description                                                      |
 |--------------------|------------------------------------------------------------------|
-| `--model MODEL`    | HuggingFace model ID to deploy (default: `Qwen/Qwen3-32B`)       |
+| `--model MODEL`    | HuggingFace model ID to deploy (default: `allenai/SERA-32B`)       |
 | `--num-gpus N`     | Number of GPUs to use; also sets tensor parallelism (default: 1) |
 | `--api-key KEY`    | API key for authentication (auto-generated if not specified)     |
 | `--hf-secret NAME` | Modal secret containing `HF_TOKEN` for private/gated models      |
@@ -90,7 +90,7 @@ You can run SERA with vLLM on any cloud GPU provider or your own hardware direct
 
 ```bash
 python -m vllm.entrypoints.openai.api_server \
-    --model Qwen/Qwen3-32B \
+    --model allenai/SERA-32B \
     --host 0.0.0.0 \
     --port 8000 \
     --max-model-len 32768 \

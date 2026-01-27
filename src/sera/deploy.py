@@ -7,14 +7,14 @@ ephemeral deployments that stop when you exit, `deploy-sera` creates persistent
 deployments that stay up until explicitly stopped.
 
 Usage:
-    deploy-sera --model Qwen/Qwen3-32B                    # Deploy with 1 GPU
-    deploy-sera --model Qwen/Qwen3-32B --num-gpus 2       # Deploy with 2 GPUs (tensor parallel)
+    deploy-sera --model allenai/SERA-32B                    # Deploy with 1 GPU
+    deploy-sera --model allenai/SERA-32B --num-gpus 2       # Deploy with 2 GPUs (tensor parallel)
     deploy-sera --model org/private-model --hf-secret huggingface  # Private model
     deploy-sera --stop                                    # Stop the running deployment
 
 Examples:
     # Deploy a model with API key authentication
-    deploy-sera --model Qwen/Qwen3-32B --api-key mykey123
+    deploy-sera --model allenai/SERA-32B --api-key mykey123
 
     # Use from another machine
     SERA_API_KEY=mykey123 sera --endpoint https://xxx.modal.run/v1/chat/completions
@@ -25,10 +25,10 @@ from __future__ import annotations
 
 import argparse
 import os
+import secrets
 import subprocess
 import sys
 import time
-import secrets
 from dataclasses import dataclass
 
 import modal
@@ -41,7 +41,7 @@ MODAL_MAX_MODEL_LEN = 32768
 MODAL_GPU = "H100"
 MODAL_VOLUME_NAME = "sera-demo-models"
 MODAL_MODELS_DIR = "/models"
-DEFAULT_MODEL = "Qwen/Qwen3-32B"
+DEFAULT_MODEL = "allenai/SERA-32B"
 DEFAULT_NUM_GPUS = 1
 
 
@@ -79,7 +79,7 @@ def _get_num_gpus() -> int:
 
 def _get_model_local_path() -> str:
     """Get the local path where the model should be stored in the volume."""
-    # Convert "Qwen/Qwen3-32B" -> "/models/Qwen3-32B"
+    # Convert "allenai/SERA-32B" -> "/models/SERA-32B"
     model_name = _get_modal_model().split("/")[-1]
     return f"{MODAL_MODELS_DIR}/{model_name}"
 
@@ -332,13 +332,13 @@ def main():
         epilog="""
 Examples:
     # Deploy with default model (1 GPU)
-    deploy-sera --model Qwen/Qwen3-32B
+    deploy-sera --model allenai/SERA-32B
 
     # Deploy with 2 GPUs for larger models
-    deploy-sera --model Qwen/Qwen3-32B --num-gpus 2
+    deploy-sera --model allenai/SERA-32B --num-gpus 2
 
     # Deploy with API key authentication
-    deploy-sera --model Qwen/Qwen3-32B --api-key mysecretkey
+    deploy-sera --model allenai/SERA-32B --api-key mysecretkey
 
     # Deploy a private HuggingFace model
     deploy-sera --model your-org/private-model --hf-secret huggingface

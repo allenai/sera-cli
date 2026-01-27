@@ -27,12 +27,12 @@ import json
 import logging
 import os
 import re
+import secrets
 import subprocess
 import sys
 import threading
 import time
 import traceback
-import secrets
 from dataclasses import dataclass
 from typing import Any, AsyncIterator
 
@@ -52,7 +52,7 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "Qwen/Qwen3-32B"
+DEFAULT_MODEL = "allenai/SERA-32B"
 DEFAULT_ENDPOINT = "http://localhost:6767/v1/chat/completions"
 DEFAULT_PORT = 8080
 DEFAULT_MAX_CONTEXT_LENGTH = 32768
