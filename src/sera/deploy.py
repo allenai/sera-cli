@@ -28,7 +28,7 @@ import os
 import subprocess
 import sys
 import time
-import uuid
+import secrets
 from dataclasses import dataclass
 
 import modal
@@ -393,7 +393,7 @@ To create a HuggingFace secret for private models:
     if args.api_key:
         CONFIG.api_key = args.api_key
     else:
-        CONFIG.api_key = str(uuid.uuid4())
+        CONFIG.api_key = secrets.token_urlsafe(32)
         print(f"Generated API key: {CONFIG.api_key}")
         print()
 

@@ -32,7 +32,7 @@ import sys
 import threading
 import time
 import traceback
-import uuid
+import secrets
 from dataclasses import dataclass
 from typing import Any, AsyncIterator
 
@@ -1274,7 +1274,7 @@ def deploy_modal_app(hf_secret: str | None = None) -> None:
         hf_secret: Optional name of Modal secret containing HF_TOKEN for private models.
     """
     # Generate API key for this deployment
-    api_key = str(uuid.uuid4())
+    api_key = secrets.token_urlsafe(32)
     CONFIG.api_key = api_key
 
     # Register the Modal function with optional HF secret and API key before deploying
