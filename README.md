@@ -4,7 +4,11 @@ This repo allows Claude Code to be used with the Ai2 Open Coding Agents SERA mod
 
 You will need [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) and [uv](https://docs.astral.sh/uv/getting-started/installation/) installed to set up the SERA CLI.
 
-For more information, see the [Open Coding Agents Blog Post](https://allenai.org/blog/open-coding-agents), [SERA Training Code](https://github.com/allenai/SERA), [SERA Paper](https://allenai.org/papers/opencodingagents), and [Ai2 Open Coding Agents Hugging Face Collection](https://huggingface.co/collections/allenai/open-coding-agents).
+For more information about Open Coding Agents and SERA, see:
+- [SERA Data Generation and Training Code](https://github.com/allenai/SERA)
+- [Ai2 Open Coding Agents Blog Post](https://allenai.org/blog/open-coding-agents)
+- [SERA Technical Report](https://allenai.org/papers/opencodingagents)
+- [Ai2 Open Coding Agents Hugging Face Collection](https://huggingface.co/collections/allenai/open-coding-agents)
 
 ## Quick Start with Modal
 
@@ -20,8 +24,11 @@ uv tool install ai2-sera-cli
 # Setup modal (this will prompt you to set up an account)
 modal setup
 
-# Deploy SERA to Modal and launch Claude Code
+# Deploy SERA to Modal and launch Claude Code this uses allenai/SERA-32B by default
 sera --modal
+
+# Use the allenai/SERA-8B model. Non-SERA models are untested and may not behave as expected
+sera --modal --model allenai/SERA-8B
 ```
 
 ## Using Existing Endpoints
@@ -44,8 +51,9 @@ sera --endpoint <endpoint URL>
 For teams or multi-user setups, you can create a persistent vLLM deployment on Modal using `deploy-sera`. Unlike `sera --modal` which creates ephemeral deployments that stop when you exit, `deploy-sera` creates persistent deployments that stay up until explicitly stopped.
 
 ```bash
-# Deploy a persistent vLLM instance
+# Deploy a persistent vLLM instance with your choice of model
 deploy-sera --model allenai/SERA-32B
+deploy-sera --model allenai/SERA-8B
 
 # The command outputs an endpoint URL and API key
 # Share these with your team members
