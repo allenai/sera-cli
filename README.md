@@ -5,6 +5,7 @@ This repo allows Claude Code to be used with the Ai2 Open Coding Agents SERA mod
 You will need [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) and [uv](https://docs.astral.sh/uv/getting-started/installation/) installed to set up the SERA CLI.
 
 For more information about Open Coding Agents and SERA, see:
+- [sera-cli Demo on YouTube](https://www.youtube.com/watch?v=LfLIi4ZR_jA)
 - [SERA Data Generation and Training Code](https://github.com/allenai/SERA)
 - [Ai2 Open Coding Agents Blog Post](https://allenai.org/blog/open-coding-agents)
 - [SERA Technical Report](https://allenai.org/papers/opencodingagents)
