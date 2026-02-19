@@ -17,9 +17,10 @@ build:
 
 # Build for publishing (disables uv.sources)
 build-publish:
+    rm -r dist/*
     uv build --no-sources
 
-# Publish to PyPI
+# Publish to PyPI. Requires setting `UV_PUBLISH_TOKEN` env var with your PyPI token
 publish: build-publish
     uv publish
 
