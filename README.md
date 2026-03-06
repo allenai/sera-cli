@@ -7,8 +7,8 @@ You will need [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overv
 For more information about Open Coding Agents and SERA, see:
 - [sera-cli Demo on YouTube](https://www.youtube.com/watch?v=LfLIi4ZR_jA)
 - [SERA Data Generation and Training Code](https://github.com/allenai/SERA)
-- [Ai2 Open Coding Agents Blog Post](https://allenai.org/blog/open-coding-agents)
 - [SERA Technical Report](https://allenai.org/papers/opencodingagents)
+- [Ai2 Open Coding Agents Blog Post](https://allenai.org/blog/open-coding-agents)
 - [Ai2 Open Coding Agents Hugging Face Collection](https://huggingface.co/collections/allenai/open-coding-agents)
 
 ## Quick Start with Modal
